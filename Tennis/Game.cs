@@ -9,8 +9,9 @@ namespace Tennis
     {
         private Ball ball;
         private Player player1, player2;
+        private Random random = new Random();
 
-        private double startBallVx = 2.5, startBallVy = -2.5;
+        private double startBallVx = 2.4, startBallVy = 2.4;
 
         public const int FieldWidth = 500;   // размеры 
         public const int FieldHeight = 300;  // игрового поля
@@ -138,10 +139,12 @@ namespace Tennis
             return (ball.X - ball.Radius) <= 0; // коснулись левой стенки
         }
 
+        /* перезапуск (вызывается после касания мяча боковой стенки) */
         public void Restart()
         {
+            // мяч появляется в случаном месте на центральной линии поля
             ball.X = FieldWidth / 2;
-            ball.Y = FieldHeight / 2;
+            ball.Y = random.Next(FieldHeight - ball.Radius) + ball.Radius / 2;
             ball.Vx = startBallVx;
             ball.Vy = startBallVy;
         }
