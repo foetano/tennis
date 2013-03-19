@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.gameFieldPictBox = new System.Windows.Forms.PictureBox();
             this.gameStepTimer = new System.Windows.Forms.Timer(this.components);
+            this.pauseTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.gameFieldPictBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -46,8 +47,13 @@
             // gameStepTimer
             // 
             this.gameStepTimer.Enabled = true;
-            this.gameStepTimer.Interval = 5;
+            this.gameStepTimer.Interval = 10;
             this.gameStepTimer.Tick += new System.EventHandler(this.gameStepTimer_Tick);
+            // 
+            // pauseTimer
+            // 
+            this.pauseTimer.Interval = 2000;
+            this.pauseTimer.Tick += new System.EventHandler(this.pauseTimer_Tick);
             // 
             // GameForm
             // 
@@ -70,6 +76,7 @@
 
         private System.Windows.Forms.PictureBox gameFieldPictBox;
         private System.Windows.Forms.Timer gameStepTimer;
+        private System.Windows.Forms.Timer pauseTimer;
     }
 }
 

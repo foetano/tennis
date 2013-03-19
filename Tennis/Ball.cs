@@ -13,7 +13,7 @@ namespace Tennis
         public double Vx { get; set; } // скорость
         public double Vy { get; set; }
 
-        public Ball(int x, int y, int vx, int vy)
+        public Ball(int x, int y, double vx, double vy)
         {
             this.X = x;
             this.Y = y;

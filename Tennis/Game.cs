@@ -10,6 +10,8 @@ namespace Tennis
         private Ball ball;
         private Player player1, player2;
 
+        private double startBallVx = 2.5, startBallVy = -2.5;
+
         public const int FieldWidth = 500;   // размеры 
         public const int FieldHeight = 300;  // игрового поля
         public const int PlayerVelocity = 2;   // скорость игроков
@@ -31,7 +33,7 @@ namespace Tennis
             set { ball.Radius = value; }
         }
 
-        /* свойства - параметры "ракеток" игроков*/
+        /* свойства - параметры "ракеток" игроков */
         #region игрок раз
         public int Player1X
         {
@@ -42,11 +44,6 @@ namespace Tennis
         {
             get { return player1.Y; }
             set { player1.Y = value; }
-        }
-        public int Player1Vy
-        {
-            get { return player1.Vy; }
-            set { player1.Vy = value; }
         }
         public int Player1Width
         {
@@ -70,11 +67,6 @@ namespace Tennis
             get { return player2.Y; }
             set { player2.Y = value; }
         }
-        public int Player2Vy
-        {
-            get { return player2.Vy; }
-            set { player2.Vy = value; }
-        }
         public int Player2Width
         {
             get { return player2.Width; }
@@ -88,10 +80,10 @@ namespace Tennis
         #endregion
 
         /* конструктор */
-        public Game(int ballVx, int ballVy)
+        public Game()
         {
             // создаём мяч
-            ball = new Ball(FieldWidth / 2, FieldHeight / 2, ballVx, ballVy);
+            ball = new Ball(FieldWidth / 2, FieldHeight / 2, startBallVx, startBallVy);
             // задаём начальные параметры "ракеток" игроков
             int playerWidth = 10, playerHeight = 50;
             int startPos = 200;
@@ -100,6 +92,7 @@ namespace Tennis
             player2 = new Player(FieldWidth - playerWidth, FieldHeight - startPos - playerHeight, playerWidth, playerHeight);
         }
 
+        /* перемещение объектов */
         public void BallMove()
         {
             bool borderColloission = checkBallBorderCollision();
@@ -135,6 +128,25 @@ namespace Tennis
             player.Vy = 0;
         }
 
+        /* проверка на выигрыш/проигрыш */
+        public bool IsPlayer1Win() 
+        {
+            return (ball.X + ball.Radius) >= FieldWidth; // коснулись правой стенки
+        }
+        public bool IsPlayer2Win()
+        {
+            return (ball.X - ball.Radius) <= 0; // коснулись левой стенки
+        }
+
+        public void Restart()
+        {
+            ball.X = FieldWidth / 2;
+            ball.Y = FieldHeight / 2;
+            ball.Vx = startBallVx;
+            ball.Vy = startBallVy;
+        }
+
+        /* проверка/обработка столкновений */
         private bool checkBallBorderCollision() // проверка на столкновение мяча со стенкой
         {
             if (((ball.Y + ball.Radius) + ball.Vy > FieldHeight) ||
@@ -143,12 +155,12 @@ namespace Tennis
                 ball.Vy = -ball.Vy;
                 return true;
             }
-            if (((ball.X + ball.Radius) + ball.Vx > FieldWidth) ||
+            /*if (((ball.X + ball.Radius) + ball.Vx > FieldWidth) ||
                 ((ball.X - ball.Radius) + ball.Vx < 0))
             {
                 ball.Vx = -ball.Vx;
                 return true;
-            }
+            }*/
             return false;
         }
 
