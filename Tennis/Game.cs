@@ -12,6 +12,7 @@ namespace Tennis
 
         public const int FieldWidth = 500;   // размеры 
         public const int FieldHeight = 300;  // игрового поля
+        public const int PlayerVelocity = 2;   // скорость игроков
 
         /* свойства - параметры мяча */
         public int BallX
@@ -101,9 +102,12 @@ namespace Tennis
 
         public void BallMove()
         {
-            checkBallBorderCollision();
-            checkPlayerBallCollision();
-            ball.Move();
+            bool borderColloission = checkBallBorderCollision();
+            bool playerColloission = checkPlayerBallCollision();
+            if (!playerColloission)
+                playerColloission = checkAngleCollision();
+            if (!borderColloission || !playerColloission) 
+                ball.Move();
         }
 
         public void PlayerMoveUp()
@@ -119,14 +123,15 @@ namespace Tennis
 
         public void Player2Move()
         {
-            player2.Vy = (ball.Y > player2.Y + (player2.Height / 2)) ? 3 : -3;
+            player2.Vy = (ball.Y > player2.Y + (player2.Height / 2)) ? PlayerVelocity : -PlayerVelocity;
             PlayerMove(player2);
         }
 
         private void PlayerMove(Player player)
         {
             checkPlayerBorderCollision(player);
-            player.Move();
+            if (!checkAngleCollision())
+                player.Move();
             player.Vy = 0;
         }
 
@@ -155,21 +160,78 @@ namespace Tennis
                 player.Vy = Game.FieldHeight - (player.Y + player.Height);
         }
 
-        private bool checkPlayerBallCollision()
+        private bool checkPlayerBallCollision() // проверка столкновения мяча с "ракеткой"
         {
-            if ((ball.X + ball.Vx - ball.Radius) < (player1.X + player1.Width) &&
-                (ball.Y + ball.Vy) > player1.Y && (ball.Y + ball.Vy) < (player1.Y + player1.Height))
+            int newX = (int)Math.Round(ball.X + ball.Vx);
+            int newY = (int)Math.Round(ball.Y + ball.Vy);
+            // левая
+            if ((newX - ball.Radius) < (player1.X + player1.Width) &&
+                newY > player1.Y && newY < (player1.Y + player1.Height))
             {
                 ball.Vx = -ball.Vx;
                 return true;
             }
-            if ((ball.X + ball.Vx + ball.Radius) > player2.X &&
-                (ball.Y + ball.Vy) > player2.Y && (ball.Y + ball.Vy) < (player2.Y + player2.Height))
+            // правая
+            else if ((newX + ball.Radius) > player2.X &&
+                newY > player2.Y && newY < (player2.Y + player2.Height))
             {
                 ball.Vx = -ball.Vx;
                 return true;
             }
             return false;
+        }
+
+        private bool checkAngleCollision() // проверка столкновения с краем "ракетки"
+        {
+            int ballX = (int)Math.Round(ball.X + ball.Vx);
+            int ballY = (int)Math.Round(ball.Y + ball.Vy);
+            // левый игрок
+            if ((ballX - ball.Radius) < (player1.X + player1.Width))
+            {
+                int pl1X = player1.X;
+                int pl1Y = player1.Y + player1.Vy;
+                // верхний край
+                if (distanceBetweenTwoPoints(ballX, ballY, pl1X + player1.Width, pl1Y) < ball.Radius)
+                {
+                    ball.Vx = Math.Abs(ball.Vx);
+                    ball.Vy = -Math.Abs(ball.Vy);
+                    return true;
+                }
+                // нижний край
+                else if (distanceBetweenTwoPoints(ballX, ballY, pl1X + player1.Width, pl1Y + player1.Height) < ball.Radius)
+                {
+                    ball.Vx = Math.Abs(ball.Vx);
+                    ball.Vy = Math.Abs(ball.Vy);
+                    return true;
+                }
+            }
+            else if ((ballX - ball.Radius) < player2.X)  // правый игрок
+            {
+                int pl2X = player2.X;
+                int pl2Y = player2.Y + player2.Vy;
+                // верхний край
+                if (distanceBetweenTwoPoints(ballX, ballY, pl2X, pl2Y) < ball.Radius)
+                {
+                    ball.Vx = -Math.Abs(ball.Vx);
+                    ball.Vy = -Math.Abs(ball.Vy);
+                    return true;
+                }
+                // нижний край
+                else if (distanceBetweenTwoPoints(ballX, ballY, pl2X, pl2Y + player2.Height) < ball.Radius)
+                {
+                    ball.Vx = -Math.Abs(ball.Vx);
+                    ball.Vy = Math.Abs(ball.Vy);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private double distanceBetweenTwoPoints(double x1, double y1, double x2, double y2)
+        {
+            double dx = x1 - x2;
+            double dy = y1 - y2;
+            return Math.Sqrt(dx * dx + dy * dy);
         }
     }
 }
