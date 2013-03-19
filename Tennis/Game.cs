@@ -155,12 +155,6 @@ namespace Tennis
                 ball.Vy = -ball.Vy;
                 return true;
             }
-            /*if (((ball.X + ball.Radius) + ball.Vx > FieldWidth) ||
-                ((ball.X - ball.Radius) + ball.Vx < 0))
-            {
-                ball.Vx = -ball.Vx;
-                return true;
-            }*/
             return false;
         }
 
